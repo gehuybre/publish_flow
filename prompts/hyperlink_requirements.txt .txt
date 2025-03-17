@@ -1,0 +1,24 @@
+AANVULLENDE INSTRUCTIES: HYPERLINKS VEREIST
+
+Bij het maken van het persbericht is het VERPLICHT om hyperlinks op te nemen bij elke bronvermelding. Volg hiervoor deze specifieke richtlijnen:
+
+1. Format van Hyperlinks
+   - Voor ELKE verwijzing naar JSON-artikelen, neem de volledige URL op in de vorm van een HTML hyperlink.
+   - Gebruik dit HTML formaat: <a href="https://www.embuildvlaanderen.be/press-room/artikel-pad/">Embuild Vlaanderen, DD MMM JJJJ</a>
+   - Gebruik het "url" veld uit de JSON-objecten voor de hyperlinks.
+
+2. Integratie in de Tekst
+   - Integreer hyperlinks op een natuurlijke manier in de zin, bijvoorbeeld: "Volgens <a href="https://www.embuildvlaanderen.be/press-room/artikel-pad/">recent onderzoek van Embuild Vlaanderen (DD MMM JJJJ)</a> blijkt dat..."
+   - Je mag ook verwijzen in dit formaat: "Deze bevinding sluit aan bij <a href="https://www.embuildvlaanderen.be/press-room/artikel-pad/">ons eerdere rapport over dit onderwerp (Embuild Vlaanderen, DD MMM JJJJ)</a>"
+
+3. Volledigheid en Dekking
+   - ELKE paragraaf moet minstens één hyperlink bevatten die verwijst naar een relevant JSON-artikel
+   - Zorg voor minimum 3-5 verschillende hyperlinks verspreid over het persbericht
+   - Belangrijke claims en statistieken MOETEN altijd een hyperlink naar een bron hebben
+
+4. Technische Vereisten
+   - Gebruik valide HTML-syntax voor alle hyperlinks
+   - De hyperlinks moeten verwijzen naar de exacte URL's zoals ze in de JSON-data staan
+   - Test of alle hyperlinks correct zijn geformatteerd
+
+Deze hyperlinks zijn essentieel voor de geloofwaardigheid van het persbericht en stellen lezers in staat om meer informatie te vinden over de onderwerpen die worden besproken. Elk persbericht zonder de vereiste hyperlinks wordt als onvolledig beschouwd.

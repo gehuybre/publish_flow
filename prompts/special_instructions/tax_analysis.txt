@@ -1,0 +1,35 @@
+SPECIALISTISCHE INSTRUCTIES: FISCALE ANALYSE
+
+Bij het schrijven van een persbericht over fiscale onderwerpen zoals registratierechten, belastingen, of andere fiscale maatregelen, houd rekening met deze aanvullende richtlijnen:
+
+1. Precisie in Fiscale Terminologie
+   - Gebruik de juiste fiscale terminologie: "verkooprechten", "registratierechten", "onroerende voorheffing", etc.
+   - Vermeld altijd de exacte percentages of bedragen wanneer je over belastingtarieven of vrijstellingen spreekt
+   - Maak duidelijk onderscheid tussen verschillende belastingcategorieën (bijv. eigenaar-bewoners vs. investeerders)
+
+2. Context van Fiscaal Beleid
+   - Plaats fiscale maatregelen in de bredere context van woonbeleid, economische stimulering, of sociale doelstellingen
+   - Verwijs naar de historische evolutie van de besproken fiscale maatregelen
+   - Vergelijk waar passend met andere regio's of landen
+
+3. Impact-Analyse
+   - Bespreek de impact van fiscale maatregelen op verschillende stakeholders:
+     * Kopers (eerste woning vs. investeerders)
+     * Bouwsector
+     * Bredere economie
+     * Sociale rechtvaardigheid
+   - Kwantificeer waar mogelijk de effecten met concrete cijfers uit de JSON-data
+
+4. Embuild Vlaanderen's Standpunt
+   - Benoem duidelijk welke fiscale maatregelen Embuild Vlaanderen steunt of waar aanpassingen gewenst zijn
+   - Benadruk de rol van fiscaliteit als instrument voor woningmarktbeleid
+   - Verbind fiscale maatregelen aan bredere doelstellingen zoals betaalbaarheid, duurzaamheid, of marktmobiliteit
+
+5. Voorbeelden en Case Studies
+   - Neem concrete voorbeelden op van de impact van fiscale maatregelen
+   - Overweeg een rekenvoorbeeld dat de impact voor een typisch gezin of investeerder illustreert
+
+6. Toon en Perspectief
+   - Blijf objectief en informatief bij de bespreking van fiscale effecten
+   - Vermijd overtrokken claims over belastingeffecten
+   - Benadruk constructieve oplossingen en verbeteringen

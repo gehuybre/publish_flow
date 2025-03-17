@@ -1,0 +1,43 @@
+SPECIALISTISCHE INSTRUCTIES: BOUW EN RENOVATIE
+
+Bij het schrijven van een persbericht over bouwactiviteiten, renovatie, bouwsector, of gerelateerde constructie-onderwerpen, volg deze aanvullende richtlijnen:
+
+1. Technische Precisie
+   - Gebruik correcte technische terminologie voor bouw- en renovatietechnieken
+   - Beschrijf bouwprocessen, materialen en technieken met de juiste vaktermen
+   - Zorg voor nauwkeurigheid bij het vermelden van technische specificaties, normen of regelgeving
+
+2. Duurzaamheid en Innovatie
+   - Benadruk innovatieve bouwmethoden en materialen die bijdragen aan duurzaamheid
+   - Bespreek energiezuinige bouwtechnieken en hun impact op klimaatdoelstellingen
+   - Koppel bouwactiviteiten aan bredere duurzaamheidsdoelstellingen (CO2-reductie, circulaire economie)
+
+3. Economische Impact
+   - Vermeld cijfers over werkgelegenheid in de bouwsector
+   - Beschrijf de economische impact van bouw- en renovatieactiviteiten
+   - Bespreek de rol van de bouwsector als economische motor
+
+4. Regelgeving en Normen
+   - Verwijs naar relevante bouwregelgeving, EPB-normen, of bouwstandaarden
+   - Bespreek de impact van regelgeving op bouwactiviteiten en kosten
+   - Maak onderscheid tussen verplichte normen en vrijwillige kwaliteitslabels
+
+5. Praktijkvoorbeelden
+   - Neem concrete voorbeelden op van innovatieve bouwprojecten uit de JSON-data
+   - Beschrijf best practices voor specifieke bouw- of renovatieactiviteiten
+   - Illustreer hoe bouwprojecten bijdragen aan maatschappelijke doelstellingen
+
+6. Uitdagingen en Oplossingen
+   - Benoem actuele uitdagingen in de bouwsector (arbeidstekort, materiaalkosten, etc.)
+   - Presenteer oplossingsgerichte strategieën voor deze uitdagingen
+   - Vermeld hoe Embuild Vlaanderen bijdraagt aan het oplossen van sectorproblemen
+
+7. Toekomstperspectief
+   - Schets trends en evoluties in de bouwsector
+   - Bespreek potentiële impact van nieuwe technologieën (BIM, 3D-printen, prefab)
+   - Verwijs naar toekomstige projecten of initiatieven
+
+8. Verbinding met Eindgebruikers
+   - Maak de relevantie voor verschillende eindgebruikers duidelijk (particulieren, professionals)
+   - Vertaal technische voordelen naar praktische voordelen voor gebruikers
+   - Benadruk zowel korte- als langetermijnvoordelen van kwaliteitsvolle bouw
