@@ -233,29 +233,51 @@ class PressReleaseEnhancementSystem:
             create_html
         ]
     
-    def run_crew(self) -> str:
-        """Run the full CrewAI workflow and return the final output."""
+def run_crew(self) -> str:
+    """Run the full CrewAI workflow and return the final output."""
+    try:
         # Verify that required data is available
         if not all([self.json_content, self.user_prompt, self.system_prompt]):
             print("Missing required data. Cannot proceed.")
             return None
         
         print("Creating agents for the press release crew...")
-        agents = self.create_agents()
+        try:
+            agents = self.create_agents()
+            print("Successfully created agents:", list(agents.keys()))
+        except Exception as agent_error:
+            print(f"Error creating agents: {agent_error}")
+            raise
         
         print("Setting up workflow tasks...")
-        tasks = self.create_tasks(agents)
+        try:
+            tasks = self.create_tasks(agents)
+            print("Successfully created tasks:", len(tasks))
+        except Exception as task_error:
+            print(f"Error creating tasks: {task_error}")
+            raise
         
         print("Assembling the crew...")
-        crew = Crew(
-            agents=list(agents.values()),
-            tasks=tasks,
-            verbose=2,
-            process=Process.sequential  # Tasks must be executed in order
-        )
+        try:
+            from crewai import Crew, Process
+            crew = Crew(
+                agents=list(agents.values()),
+                tasks=tasks,
+                verbose=2,
+                process=Process.sequential
+            )
+            print("Successfully assembled crew.")
+        except Exception as crew_error:
+            print(f"Error assembling crew: {crew_error}")
+            raise
         
         print("Starting the press release enhancement workflow...")
-        result = crew.kickoff()
+        try:
+            result = crew.kickoff()
+            print("Crew workflow completed successfully.")
+        except Exception as kickoff_error:
+            print(f"Error during crew kickoff: {kickoff_error}")
+            raise
         
         # Extract the final HTML version
         self.final_version = result
@@ -266,6 +288,11 @@ class PressReleaseEnhancementSystem:
         
         print(f"Output saved to {self.paths['output']}")
         return result
+    except Exception as e:
+        print(f"Critical error in run_crew(): {e}")
+        import traceback
+        traceback.print_exc()
+        raise  # Re-raise to prevent fallback to legacy method
     
     def generate_legacy(self) -> str:
         """
