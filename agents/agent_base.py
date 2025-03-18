@@ -18,8 +18,10 @@ class BaseAgent:
     
     def create_llm(self, temperature=0.7):
         """Create a language model instance for this agent."""
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        
         return ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
+            model="google/gemini-2.0-flash",  # Added provider prefix
             google_api_key=self.api_key,
             temperature=temperature,
             top_p=0.95,

@@ -5,8 +5,14 @@ from typing import Dict, List, Optional, Any
 from pathlib import Path
 
 # Import original dependencies
-from google import genai
-from google.genai import types
+# Import original dependencies - use the pattern from the working example
+try:
+    from google import genai
+    from google.genai import types
+    GOOGLE_API_AVAILABLE = True
+except ImportError:
+    print("Google GenerativeAI library not found - will use fallback methods")
+    GOOGLE_API_AVAILABLE = False
 
 # Import API key helper function
 from api_key_helper import get_api_key
@@ -42,15 +48,21 @@ class PressReleaseEnhancementSystem:
     multi-agent approach with Google Generative AI models.
     """
     
-    def __init__(self, base_path: str = "/content/drive/MyDrive/Colab Notebooks/publish_flow"):
+    def __init__(self, base_path: str = "/content/drive/MyDrive/Colab Notebooks/publish_flow", debug: bool = False):
         """
         Initialize the Press Release Enhancement System.
         
         Args:
             base_path: Path to the directory containing data, prompts, and output files
+            debug: Whether to enable debug mode with more verbose logging
         """
         # Set up paths
         self.base_path = Path(base_path)
+        self.debug = debug
+        
+        if self.debug:
+            print(f"Initializing Press Release Enhancement System with base path: {self.base_path}")
+        
         self.paths = {
             "json": self.base_path / "data/emv_pers.json",
             "user_prompt": self.base_path / "user_input/prompt_1.txt",
@@ -64,26 +76,29 @@ class PressReleaseEnhancementSystem:
         # Create drafts directory if it doesn't exist
         os.makedirs(self.paths["drafts"], exist_ok=True)
         
-        # Set up Google AI client with flexible key handling
-        self.api_key = get_api_key('AI_STUDIO_API')
+        # Set up Google AI client based on working example
+        self.api_key = get_api_key('GEMINI_API_KEY')  # Try GEMINI_API_KEY
+        if not self.api_key:
+            self.api_key = get_api_key('AI_STUDIO_API')  # Fall back to AI_STUDIO_API
+        
         if not self.api_key:
             raise ValueError("No API key available. Cannot initialize Google GenAI client.")
         
-        # Try different API patterns to handle different versions of the library
-        try:
-            # Try modern approach first
-            self.client = genai.GenerativeModel(model_name="gemini-2.0-flash", api_key=self.api_key)
-            print("Using newer Google Generative AI API")
-        except AttributeError:
+        if self.debug:
+            print("API key loaded successfully.")
+            
+        # Initialize client using the working pattern
+        if GOOGLE_API_AVAILABLE:
             try:
-                # Try the older configure + Client approach
-                genai.configure(api_key=self.api_key)
                 self.client = genai.Client(api_key=self.api_key)
-                print("Using older Google Generative AI API")
-            except AttributeError:
-                # If both fail, you might need to install the library
-                print("Google Generative AI library not properly installed. Try: pip install google-generativeai")
-                raise
+                print("Successfully initialized Google GenAI client.")
+                self.model = "gemini-2.0-flash"  # Default model for text generation
+            except Exception as e:
+                print(f"Error initializing Google GenAI client: {e}")
+                self.client = None
+        else:
+            self.client = None
+            print("Google GenAI library not available. Some features will be limited.")
         
         # Load essential data
         self.json_content = self._load_file(self.paths["json"])
@@ -152,6 +167,9 @@ class PressReleaseEnhancementSystem:
     
     def create_agents(self) -> Dict[str, Agent]:
         """Create and return all the specialized agents for the crew."""
+        if self.debug:
+            print("Creating specialized agents...")
+        
         # Create agent instances
         content_strategist = ContentStrategist(self.api_key).create_agent()
         writer = PressReleaseWriter(self.api_key).create_agent()
@@ -161,7 +179,7 @@ class PressReleaseEnhancementSystem:
         quality_assurance = QualityAssurance(self.api_key).create_agent()
         html_formatter = HTMLFormatter(self.api_key).create_agent()
         
-        return {
+        agents = {
             "content_strategist": content_strategist,
             "writer": writer,
             "fact_checker": fact_checker,
@@ -170,9 +188,16 @@ class PressReleaseEnhancementSystem:
             "quality_assurance": quality_assurance,
             "html_formatter": html_formatter
         }
+        
+        if self.debug:
+            print(f"Created {len(agents)} agents: {', '.join(agents.keys())}")
+        
+        return agents
     
     def create_tasks(self, agents: Dict[str, Agent]) -> List[Task]:
         """Create and return all tasks for the crew workflow."""
+        if self.debug:
+            print("Creating workflow tasks...")
         
         # Assemble context data for tasks
         context_data = {
@@ -223,7 +248,7 @@ class PressReleaseEnhancementSystem:
             context_tasks=[quality_assessment]
         )
         
-        return [
+        tasks = [
             develop_strategy,
             write_drafts,
             fact_check,
@@ -232,138 +257,235 @@ class PressReleaseEnhancementSystem:
             quality_assessment,
             create_html
         ]
+        
+        if self.debug:
+            print(f"Created {len(tasks)} tasks")
+            for i, task in enumerate(tasks):
+                task_name = task.__class__.__name__ if hasattr(task, "__class__") else "Task"
+                assigned_agent = task.agent.role if hasattr(task, "agent") and hasattr(task.agent, "role") else "Unknown"
+                print(f"Task {i+1}: {task_name} assigned to {assigned_agent}")
+        
+        return tasks
     
-def run_crew(self) -> str:
-    """Run the full CrewAI workflow and return the final output."""
-    try:
-        # Verify that required data is available
-        if not all([self.json_content, self.user_prompt, self.system_prompt]):
-            print("Missing required data. Cannot proceed.")
-            return None
-        
-        print("Creating agents for the press release crew...")
+    def run_crew(self) -> str:
+        """Run the full CrewAI workflow and return the final output."""
         try:
-            agents = self.create_agents()
-            print("Successfully created agents:", list(agents.keys()))
-        except Exception as agent_error:
-            print(f"Error creating agents: {agent_error}")
+            # Verify that required data is available
+            if not all([self.json_content, self.user_prompt, self.system_prompt]):
+                print("Missing required data. Cannot proceed.")
+                return None
+            
+            print("Creating agents for the press release crew...")
+            try:
+                agents = self.create_agents()
+                print(f"Successfully created {len(agents)} agents: {list(agents.keys())}")
+            except Exception as agent_error:
+                print(f"Error creating agents: {agent_error}")
+                raise
+            
+            print("Setting up workflow tasks...")
+            try:
+                tasks = self.create_tasks(agents)
+                print(f"Successfully created {len(tasks)} tasks")
+            except Exception as task_error:
+                print(f"Error creating tasks: {task_error}")
+                raise
+            
+            print("Assembling the crew...")
+            try:
+                crew = Crew(
+                    agents=list(agents.values()),
+                    tasks=tasks,
+                    verbose=True,
+                    process=Process.sequential
+                )
+                print("Successfully assembled crew.")
+            except Exception as crew_error:
+                print(f"Error assembling crew: {crew_error}")
+                raise
+            
+            print("Starting the press release enhancement workflow...")
+            try:
+                result = crew.kickoff()
+                print("Crew workflow completed successfully.")
+            except Exception as kickoff_error:
+                print(f"Error during crew kickoff: {kickoff_error}")
+                raise
+            
+            # Extract the final HTML version
+            self.final_version = result
+            
+            # Save the final output
+            with open(self.paths["output"], "w", encoding="utf-8") as f:
+                f.write(result)
+            
+            print(f"Output saved to {self.paths['output']}")
+            
+            # Print a preview of the result
+            print("\nPress Release Preview (first 500 characters):")
+            print("-" * 80)
+            print(result[:500] + "..." if len(result) > 500 else result)
+            print("-" * 80)
+            
+            return result
+        except Exception as e:
+            print(f"Critical error in run_crew(): {e}")
+            import traceback
+            traceback.print_exc()
             raise
-        
-        print("Setting up workflow tasks...")
-        try:
-            tasks = self.create_tasks(agents)
-            print("Successfully created tasks:", len(tasks))
-        except Exception as task_error:
-            print(f"Error creating tasks: {task_error}")
-            raise
-        
-        print("Assembling the crew...")
-        try:
-            from crewai import Crew, Process
-            crew = Crew(
-                agents=list(agents.values()),
-                tasks=tasks,
-                verbose=2,
-                process=Process.sequential
-            )
-            print("Successfully assembled crew.")
-        except Exception as crew_error:
-            print(f"Error assembling crew: {crew_error}")
-            raise
-        
-        print("Starting the press release enhancement workflow...")
-        try:
-            result = crew.kickoff()
-            print("Crew workflow completed successfully.")
-        except Exception as kickoff_error:
-            print(f"Error during crew kickoff: {kickoff_error}")
-            raise
-        
-        # Extract the final HTML version
-        self.final_version = result
-        
-        # Save the final output
-        with open(self.paths["output"], "w", encoding="utf-8") as f:
-            f.write(result)
-        
-        print(f"Output saved to {self.paths['output']}")
-        return result
-    except Exception as e:
-        print(f"Critical error in run_crew(): {e}")
-        import traceback
-        traceback.print_exc()
-        raise  # Re-raise to prevent fallback to legacy method
     
     def generate_legacy(self) -> str:
         """
         Generate a press release using the original single-model approach.
-        Maintained for backward compatibility and comparison.
-        Updated for different versions of the Google GenAI API.
+        Updated to follow the working example pattern.
         """
         print("Generating press release using legacy method...")
         
-        # Handle different API versions
+        # Check if the client was initialized properly
+        if not GOOGLE_API_AVAILABLE or not self.client:
+            print("Google GenAI client not available. Using direct HTTP request instead.")
+            return self._generate_with_direct_request()
+        
         try:
-            # Newer API approach
-            prompt = f"{self.json_content}\n\n{self.user_prompt}"
-            generation_config = {
-                "temperature": 0.7,
-                "top_p": 0.95,
-                "top_k": 64,
-                "max_output_tokens": 65536,
-            }
+            # Format the content based on the working example
+            model = "gemini-2.0-flash"  # Text generation model
             
-            print("Generating press release with newer API...")
+            # Combine JSON content and user prompt
+            combined_prompt = f"{self.json_content}\n\n{self.user_prompt}"
             
-            response = self.client.generate_content(
-                contents=[prompt],
-                generation_config=generation_config,
-                system_instruction=self.system_prompt
-            )
-            
-            output_text = response.text
-            
-        except AttributeError:
-            # Older API approach
             contents = [
                 types.Content(
                     role="user",
                     parts=[
-                        types.Part.from_text(text=self.json_content),
-                        types.Part.from_text(text=self.user_prompt),
+                        types.Part.from_text(text=combined_prompt),
                     ],
                 ),
             ]
-
-            # Generate with the assembled system prompt
+            
+            # Create generation config
             generate_content_config = types.GenerateContentConfig(
                 temperature=0.7,
                 top_p=0.95,
                 top_k=64,
-                max_output_tokens=65536,
+                max_output_tokens=8192,
                 response_mime_type="text/plain",
-                system_instruction=[
-                    types.Part.from_text(text=self.system_prompt),
-                ],
             )
-
-            model = "gemini-2.0-flash"
+            
+            # If system prompt is available, add it to the config
+            if hasattr(types.GenerateContentConfig, 'system_instruction'):
+                system_instruction = [types.Part.from_text(text=self.system_prompt)]
+                generate_content_config.system_instruction = system_instruction
+            
+            print("Generating content with Google GenAI API...")
             output_text = ""
             
-            print("Generating press release with older API...")
+            # Use streaming to get the response in chunks
             for chunk in self.client.models.generate_content_stream(
                 model=model,
                 contents=contents,
                 config=generate_content_config,
             ):
-                output_text += chunk.text
-                print(chunk.text, end="")
+                # Extract text from the chunk
+                if hasattr(chunk, 'text'):
+                    output_text += chunk.text
+                    print(chunk.text, end="")
+                # Handle different response formats
+                elif hasattr(chunk, 'candidates') and chunk.candidates:
+                    if chunk.candidates[0].content and chunk.candidates[0].content.parts:
+                        for part in chunk.candidates[0].content.parts:
+                            if hasattr(part, 'text') and part.text:
+                                output_text += part.text
+                                print(part.text, end="")
             
-            print()  # Add newline after streaming output
+            print("\nContent generation complete.")
+            
+            # Save the output
+            self._save_output(output_text)
+            return output_text
+            
+        except Exception as e:
+            print(f"Error generating content with Google GenAI API: {e}")
+            print("Falling back to direct HTTP request...")
+            return self._generate_with_direct_request()
+    
+    def _generate_with_direct_request(self) -> str:
+        """
+        Generate content using direct HTTP requests to the Google AI API.
+        Used as a fallback when the client library fails.
+        """
+        try:
+            import requests
+            
+            api_url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent"
+            headers = {
+                "Content-Type": "application/json",
+                "x-goog-api-key": self.api_key
+            }
+            
+            # Combine JSON content and user prompt
+            combined_prompt = f"{self.json_content}\n\n{self.user_prompt}"
+            
+            # Prepare the request payload
+            data = {
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [{"text": combined_prompt}]
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 0.7,
+                    "topP": 0.95,
+                    "topK": 64,
+                    "maxOutputTokens": 8192
+                }
+            }
+            
+            # Add system instruction if available
+            if self.system_prompt:
+                # Insert system instruction before user content
+                data["contents"].insert(0, {
+                    "role": "system",
+                    "parts": [{"text": self.system_prompt}]
+                })
+            
+            print("Making direct HTTP request to Google AI API...")
+            response = requests.post(api_url, headers=headers, json=data, timeout=180)
+            
+            if response.status_code == 200:
+                result = response.json()
+                try:
+                    output_text = result["candidates"][0]["content"]["parts"][0]["text"]
+                    print("Successfully generated content with direct API request.")
+                    
+                    # Save the output
+                    self._save_output(output_text)
+                    return output_text
+                except (KeyError, IndexError) as e:
+                    print(f"Error extracting text from response: {e}")
+                    print(f"Response structure: {result}")
+                    raise
+            else:
+                print(f"API request failed with status code {response.status_code}")
+                print(f"Response: {response.text}")
+                raise Exception(f"API request failed with status code {response.status_code}")
+                
+        except Exception as e:
+            print(f"Failed to generate content with direct HTTP request: {e}")
+            raise
+    
+    def _save_output(self, output_text: str) -> None:
+        """Save the generated output to a file and print a preview."""
+        if not output_text:
+            print("WARNING: No output text was generated!")
+            return
+            
+        with open(self.paths["output"], "w", encoding="utf-8") as f:
+            f.write(output_text)
+        print(f"\nOutput saved to {self.paths['output']}")
         
-        if output_text:
-            with open(self.paths["output"], "w", encoding="utf-8") as f:
-                f.write(output_text)
-            print(f"\nOutput saved to {self.paths['output']}")
-        
-        return output_text
+        # Print a preview of the result
+        print("\nPress Release Preview (first 500 characters):")
+        print("-" * 80)
+        print(output_text[:500] + "..." if len(output_text) > 500 else output_text)
+        print("-" * 80)

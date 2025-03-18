@@ -2,7 +2,7 @@
 Content Strategist agent for the press release enhancement system.
 """
 from crewai import Agent
-from .agent_base import BaseAgent
+from .agent_base import BaseAgent  # Ensure this import is correct
 
 class ContentStrategist(BaseAgent):
     """Agent responsible for developing content strategy for press releases."""
@@ -15,5 +15,5 @@ class ContentStrategist(BaseAgent):
             backstory="You are an expert Content Strategist with deep expertise in public relations and corporate communications.",
             verbose=True,
             allow_delegation=False,
-            llm=self.create_llm(temperature=0.4),  # Lower temperature for more focused strategic thinking
+            llm=self.create_llm(temperature=0.4),  # This should now work
         )
